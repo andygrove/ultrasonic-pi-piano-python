@@ -8,8 +8,8 @@ class Key:
         self.counter = 0	
 
     def set_note(self, note):
-        self.note = note;
-        self.counter = 0;
+        self.note = note
+        self.counter = 0
 
 class Synth:
   def __init__(self):
@@ -44,13 +44,24 @@ def main():
 
     while True:
       for i in range(0,7):
+        time.sleep(0.1)
         channel = i + 1
         distance = octasonic.get_sensor_reading(i)
         if distance < max_distance:
-            scale_start = start_note + octave_offset * i
-            new_note = scale_start + scale[distance%7]
-            if new_note != key[i].note:
-                synth.note_on(channel, new_note)
+          scale_start = start_note + octave_offset * i
+          new_note = scale_start + scale[distance%7]
+          if new_note != key[i].note:
+            if key[i].note > 0:
+              synth.note_off(channel, key[i].note)
+            key[i].set_note(0)
+            synth.note_on(channel, new_note)
+        elif key[i].note > 0:
+          key[i].counter = key[i].counter + 1
+          if key[i].counter == 100:
+            synth.note_off(channel, key[i].note)
+            key[i].set_note(0)
+          
+       
 
 
 
